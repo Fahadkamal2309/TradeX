@@ -1,24 +1,34 @@
 import React, { useState } from "react";
-import { auth } from "../firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import axios from "axios";
+import { API_URL } from "../../config";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Handle Login
-  const handleLogin = async (event) => {
-    event.preventDefault();
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      alert("Login successful");
+      const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+      if (response.data.success) {
+        alert("Login successful!");
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+      } else {
+        alert(response.data.message || "Login failed");
+      }
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || "Error during login.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="login-container">
+      {/* Left Side */}
       <div className="login-left">
         <img
           src="media/images/signup.png"
@@ -26,9 +36,10 @@ const Login = () => {
           className="login-image"
         />
       </div>
+
+      {/* Right Side */}
       <div className="login-right">
-        <form onSubmit={handleLogin} className="login-form">
-          <h2>Login</h2>
+        <form className="login-form" onSubmit={handleLogin}>
           <input
             type="email"
             value={email}
@@ -45,11 +56,16 @@ const Login = () => {
             required
             className="login-input"
           />
-          <button type="submit" className="login-button">
-            Login
+          <button
+            type="submit"
+            disabled={loading}
+            className="login-button"
+          >
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <div className="additional-info">
+
+        <div className="additional-info" style={{ marginTop: "20px" }}>
           <p>© 2025. All rights reserved.</p>
           <p>Support</p>
           <p>

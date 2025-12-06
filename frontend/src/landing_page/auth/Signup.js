@@ -1,25 +1,35 @@
-
 import React, { useState } from "react";
-import { auth } from "../firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import axios from "axios";
 import { Link } from "react-router-dom";
+import { API_URL } from "../../config";
+
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Handle Signup
-  const handleSignup = async (event) => {
-    event.preventDefault();
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("Signup successful");
+      const response = await axios.post(`${API_URL}/auth/signup`, { email, password });
+      if (response.data.success) {
+        alert("Signup successful!");
+        setEmail("");
+        setPassword("");
+      } else {
+        alert(response.data.message || "Signup failed");
+      }
     } catch (error) {
-      alert(error.message);
+      alert(error.response?.data?.message || "Error during signup.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="signup-container">
+      {/* Left Side */}
       <div className="signup-left">
         <img
           src="media/images/signup.png"
@@ -33,9 +43,10 @@ const SignUp = () => {
           <li>Direct mutual funds in a demat account</li>
         </ul>
       </div>
+
+      {/* Right Side */}
       <div className="signup-right">
-        <form onSubmit={handleSignup} className="signup-form">
-          <h2>Signup</h2>
+        <form className="signup-form" onSubmit={handleSignup}>
           <input
             type="email"
             value={email}
@@ -52,16 +63,21 @@ const SignUp = () => {
             required
             className="signup-input"
           />
-          <button type="submit" className="signup-button">
-            Continue
+          <button
+            type="submit"
+            disabled={loading}
+            className="signup-button"
+          >
+            {loading ? "Signing Up..." : "Continue"}
           </button>
         </form>
-        <div className="login-link-container">
-          <Link to="/login" className="login-link text-center">
+
+        <div className="login-link-container" style={{ textAlign: "center", marginTop: "15px" }}>
+          <Link to="/login" className="login-link">
             Already have an account? Login
           </Link>
         </div>
-        
+
         <div className="disclaimer">
           <p>
             By signing up, you authorize us to contact you even if your number
