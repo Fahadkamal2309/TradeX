@@ -12,8 +12,18 @@ const connectDB = require("./config/db"); // DB connection
 const app = express();
 const PORT = process.env.PORT || 3002;
 
+// ---------- CORS configuration ----------
+const corsOptions = {
+  origin: [
+    "https://tradex-3-agri.onrender.com",          // Frontend
+    "https://tradex-dashboard-4u8g.onrender.com"   // Dashboard
+  ],
+  credentials: true, // allows cookies and auth headers if needed
+};
+app.use(cors(corsOptions));
+// ----------------------------------------
+
 // Middleware
-app.use(cors());
 app.use(express.json()); // JSON parser
 
 // API Routes
@@ -61,8 +71,6 @@ app.get(/^\/frontend(\/.*)?$/, (req, res) => {
 app.get(/^\/dashboard(\/.*)?$/, (req, res) => {
   res.sendFile(path.resolve(__dirname, 'public/dashboard', 'index.html'));
 });
-
-
 
 // Connect DB first, then start server
 connectDB()
