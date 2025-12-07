@@ -1,22 +1,7 @@
-
-import React,{useState} from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import "./Funds.css";
 
 const Funds = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [availableMargin, setAvailableMargin] = useState(4043.1);
-  const [usedMargin, setUsedMargin] = useState(3757.3);
-  const [addAmount, setAddAmount] = useState("");
-
-  const handleAddFunds = () => {
-    const amount = parseFloat(addAmount);
-    if (!isNaN(amount) && amount > 0) {
-      setAvailableMargin((prev) => prev + amount);
-      setAddAmount("");
-      setIsModalOpen(false);
-    }
-  };
   return (
     <>
       <div className="funds">
@@ -96,32 +81,7 @@ const Funds = () => {
           </div>
         </div>
       </div>
-      {isModalOpen && (
-        <div className="modal-backdrop" onClick={() => setIsModalOpen(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h2>Add Funds</h2>
-            <input
-              type="number"
-              value={addAmount}
-              onChange={(e) => setAddAmount(e.target.value)}
-              placeholder="Enter amount"
-            />
-            <div className="modal-actions">
-              <button className="btn btn-green" onClick={handleAddFunds}>
-                Add
-              </button>
-              <button
-                className="btn btn-grey"
-                onClick={() => setIsModalOpen(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
-      
   );
 };
 

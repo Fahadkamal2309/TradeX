@@ -10,16 +10,29 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+      const response = await axios.post(
+        `${API_URL}/api/auth/login`,
+        { email, password },
+        {
+          headers: { "Content-Type": "application/json" }, // ensures backend parses JSON
+        }
+      );
+
       if (response.data.success) {
-        alert("Login successful!");
+        // Store token & user info
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
+
+        alert("Login successful!");
+        // Redirect to dashboard or homepage
+        window.location.href = "/dashboard";
       } else {
         alert(response.data.message || "Login failed");
       }
     } catch (error) {
+      console.error("Login error:", error.response?.data || error);
       alert(error.response?.data?.message || "Error during login.");
     } finally {
       setLoading(false);
@@ -69,7 +82,7 @@ const Login = () => {
           <p>© 2025. All rights reserved.</p>
           <p>Support</p>
           <p>
-            NSE​ &​ BSE – SEBI Registration no.: INZ000031633
+            NSE & BSE – SEBI Registration no.: INZ000031633
             <br />
             MCX - SEBI Registration no.: INZ000038238
             <br />

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { API_URL } from "../../config";
 
 const SignUp = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -11,16 +12,33 @@ const SignUp = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     try {
-      const response = await axios.post(`${API_URL}/auth/signup`, { email, password });
+      const response = await axios.post(
+        `${API_URL}/api/auth/signup`,
+        { username, email, password },
+        { headers: { "Content-Type": "application/json" } } // ensures JSON parsing
+      );
+
       if (response.data.success) {
-        alert("Signup successful!");
+        // Store token and user info in localStorage
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+
+        alert("Signup successful! You are now logged in.");
+
+        // Clear form
+        setUsername("");
         setEmail("");
         setPassword("");
+
+        // Redirect to dashboard or homepage
+        window.location.href = "../../dashboard/index.js";
       } else {
         alert(response.data.message || "Signup failed");
       }
     } catch (error) {
+      console.error("Signup error:", error.response?.data || error);
       alert(error.response?.data?.message || "Error during signup.");
     } finally {
       setLoading(false);
@@ -48,6 +66,14 @@ const SignUp = () => {
       <div className="signup-right">
         <form className="signup-form" onSubmit={handleSignup}>
           <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+            required
+            className="signup-input"
+          />
+          <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -72,7 +98,10 @@ const SignUp = () => {
           </button>
         </form>
 
-        <div className="login-link-container" style={{ textAlign: "center", marginTop: "15px" }}>
+        <div
+          className="login-link-container"
+          style={{ textAlign: "center", marginTop: "15px" }}
+        >
           <Link to="/login" className="login-link">
             Already have an account? Login
           </Link>
