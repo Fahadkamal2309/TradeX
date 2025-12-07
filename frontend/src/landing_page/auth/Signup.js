@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { API_URL } from "../../config";
+import { API_URL,DASHBOARD_URL } from "../../config";
 
 const SignUp = () => {
   const [username, setUsername] = useState("");
@@ -33,7 +33,7 @@ const SignUp = () => {
         setPassword("");
 
         // Redirect to dashboard or homepage
-        window.location.href = "../../dashboard/index.js";
+        window.location.href = DASHBOARD_URL;
       } else {
         alert(response.data.message || "Signup failed");
       }
