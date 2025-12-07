@@ -1,21 +1,22 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const path = require("path"); // needed to serve static files
 
 const authRoute = require("./routes/auth");
 const HoldingsModel = require("./model/HoldingsModel");
 const PositionsModel = require("./model/PositionsModel");
 const OrdersModel = require("./model/OrdersModel");
-const connectDB = require("./config/db"); // Import the DB connection
+const connectDB = require("./config/db"); // DB connection
 
 const app = express();
 const PORT = process.env.PORT || 3002;
 
 // Middleware
 app.use(cors());
-app.use(express.json()); // Built-in JSON parser
+app.use(express.json()); // JSON parser
 
-// Routes
+// API Routes
 app.use("/api/auth", authRoute);
 
 app.get("/allHoldings", async (req, res) => {
@@ -47,8 +48,24 @@ app.post("/newOrder", async (req, res) => {
   }
 });
 
+// Serve React apps (frontend and dashboard)
+app.use('/frontend', express.static(path.join(__dirname, 'public/frontend')));
+app.use('/dashboard', express.static(path.join(__dirname, 'public/dashboard')));
+
+// Frontend React Router fallback
+app.get(/^\/frontend(\/.*)?$/, (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'public/frontend', 'index.html'));
+});
+
+// Dashboard React Router fallback
+app.get(/^\/dashboard(\/.*)?$/, (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'public/dashboard', 'index.html'));
+});
+
+
+
 // Connect DB first, then start server
-connectDB()  // ⚠️ call the function
+connectDB()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
