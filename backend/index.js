@@ -71,6 +71,9 @@ app.get(/^\/frontend(\/.*)?$/, (req, res) => {
 app.get(/^\/dashboard(\/.*)?$/, (req, res) => {
   res.sendFile(path.resolve(__dirname, 'public/dashboard', 'index.html'));
 });
+app.get("/", (req, res) => {
+  res.redirect("/frontend");
+});
 
 // Connect DB first, then start server
 connectDB()
