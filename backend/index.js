@@ -15,10 +15,10 @@ const PORT = process.env.PORT || 3002;
 // ---------- CORS configuration ----------
 const corsOptions = {
   origin: [
-    "https://tradex-3-agri.onrender.com",          // Frontend
-    "https://tradex-dashboard-4u8g.onrender.com"   // Dashboard
+    "https://tradex-3-agri.onrender.com",        // Frontend
+    "https://tradex-dashboard-4u8g.onrender.com" // Dashboard
   ],
-  credentials: true, // allows cookies and auth headers if needed
+  credentials: true,
 };
 app.use(cors(corsOptions));
 // ----------------------------------------
@@ -58,24 +58,26 @@ app.post("/newOrder", async (req, res) => {
   }
 });
 
-// Serve React apps (frontend and dashboard)
-app.use('/frontend', express.static(path.join(__dirname, 'public/frontend')));
-app.use('/dashboard', express.static(path.join(__dirname, 'public/dashboard')));
+// Serve React apps (build folders)
+app.use('/frontend', express.static(path.join(__dirname, 'public/frontend/build')));
+app.use('/dashboard', express.static(path.join(__dirname, 'public/dashboard/build')));
 
 // Frontend React Router fallback
 app.get(/^\/frontend(\/.*)?$/, (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'public/frontend', 'index.html'));
+  res.sendFile(path.resolve(__dirname, 'public/frontend/build', 'index.html'));
 });
 
 // Dashboard React Router fallback
 app.get(/^\/dashboard(\/.*)?$/, (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'public/dashboard', 'index.html'));
+  res.sendFile(path.resolve(__dirname, 'public/dashboard/build', 'index.html'));
 });
+
+// Redirect root to frontend
 app.get("/", (req, res) => {
   res.redirect("/frontend");
 });
 
-// Connect DB first, then start server
+// Connect DB and start server
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
