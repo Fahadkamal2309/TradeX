@@ -24,6 +24,10 @@ app.use(cors(corsOptions));
 // --------------------------------
 
 app.use(express.json());
+app.use((req, res, next) => {
+  console.log("Incoming request:", req.method, req.url, req.body);
+  next();
+});
 
 // ---------- API ROUTES ----------
 app.use("/api/auth", authRoute);
