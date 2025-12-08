@@ -1,18 +1,18 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const path = require("path"); // needed to serve static files
+const path = require("path");
 
 const authRoute = require("./routes/auth");
 const HoldingsModel = require("./model/HoldingsModel");
 const PositionsModel = require("./model/PositionsModel");
 const OrdersModel = require("./model/OrdersModel");
-const connectDB = require("./config/db"); // DB connection
+const connectDB = require("./config/db");
 
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-// ---------- CORS configuration ----------
+// ----------- CORS ---------------
 const corsOptions = {
   origin: [
     "https://tradex-3-agri.onrender.com",        // Frontend
@@ -21,12 +21,11 @@ const corsOptions = {
   credentials: true,
 };
 app.use(cors(corsOptions));
-// ----------------------------------------
+// --------------------------------
 
-// Middleware
-app.use(express.json()); // JSON parser
+app.use(express.json());
 
-// API Routes
+// ---------- API ROUTES ----------
 app.use("/api/auth", authRoute);
 
 app.get("/allHoldings", async (req, res) => {
@@ -58,29 +57,36 @@ app.post("/newOrder", async (req, res) => {
   }
 });
 
-app.use('/frontend', express.static(path.join(__dirname, '../frontend/build')));
-app.use('/dashboard', express.static(path.join(__dirname, '../dashboard/build')));
+// ---------- STATIC FRONTEND ----------
+const frontendPath = path.join(__dirname, "../frontend/build");
+app.use("/frontend", express.static(frontendPath));
 
-app.get(/^\/frontend(\/.*)?$/, (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../frontend/build', 'index.html'));
+// SPA fallback: catch-all for frontend
+app.use("/frontend", (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-app.get(/^\/dashboard(\/.*)?$/, (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../dashboard/build', 'index.html'));
+// ---------- STATIC DASHBOARD ----------
+const dashboardPath = path.join(__dirname, "../dashboard/build");
+app.use("/dashboard", express.static(dashboardPath));
+
+// SPA fallback: catch-all for dashboard
+app.use("/dashboard", (req, res) => {
+  res.sendFile(path.join(dashboardPath, "index.html"));
 });
 
-// Redirect root to frontend
+// ---------- ROOT REDIRECT ----------
 app.get("/", (req, res) => {
   res.redirect("/frontend");
 });
 
-// Connect DB and start server
+// ---------- START SERVER ----------
 connectDB()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   })
-  .catch(err => {
+  .catch((err) => {
     console.error("Failed to connect to DB:", err.message);
   });
