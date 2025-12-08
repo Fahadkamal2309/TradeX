@@ -58,18 +58,15 @@ app.post("/newOrder", async (req, res) => {
   }
 });
 
-// Serve React apps (build folders)
-app.use('/frontend', express.static(path.join(__dirname, 'public/frontend/build')));
-app.use('/dashboard', express.static(path.join(__dirname, 'public/dashboard/build')));
+app.use('/frontend', express.static(path.join(__dirname, '../frontend/build')));
+app.use('/dashboard', express.static(path.join(__dirname, '../dashboard/build')));
 
-// Frontend React Router fallback
 app.get(/^\/frontend(\/.*)?$/, (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'public/frontend/build', 'index.html'));
+  res.sendFile(path.resolve(__dirname, '../frontend/build', 'index.html'));
 });
 
-// Dashboard React Router fallback
 app.get(/^\/dashboard(\/.*)?$/, (req, res) => {
-  res.sendFile(path.resolve(__dirname, 'public/dashboard/build', 'index.html'));
+  res.sendFile(path.resolve(__dirname, '../dashboard/build', 'index.html'));
 });
 
 // Redirect root to frontend
