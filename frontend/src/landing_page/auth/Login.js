@@ -34,6 +34,7 @@ const Login = () => {
 
         // Redirect to dashboard
         window.location.replace(DASHBOARD_URL);
+
       } else {
         setError(response.data.message || "Login failed");
       }
