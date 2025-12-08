@@ -60,6 +60,7 @@ app.post("/newOrder", async (req, res) => {
 // ---------- STATIC FRONTEND ----------
 const frontendPath = path.join(__dirname, "../frontend/build");
 app.use("/frontend", express.static(frontendPath));
+app.use("/frontend/media", express.static(path.join(frontendPath, "media")));
 
 // SPA fallback: catch-all for frontend
 app.use("/frontend", (req, res) => {
