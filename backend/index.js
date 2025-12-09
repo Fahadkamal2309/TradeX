@@ -15,8 +15,8 @@ const PORT = process.env.PORT || 3002;
 // ----------- CORS ---------------
 const corsOptions = {
   origin: [
-    "https://tradex-3-agri.onrender.com",        // frontend deploy
-    "https://tradex-dashboard-4u8g.onrender.com" // dashboard deploy
+    "https://tradex-3-agri.onrender.com", // frontend
+    "https://tradex-dashboard-4u8g.onrender.com" // dashboard
   ],
   credentials: true,
 };
@@ -25,7 +25,7 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use((req, res, next) => {
-  console.log("Incoming request:", req.method, req.url, req.body);
+  console.log("Incoming request:", req.method, req.url);
   next();
 });
 
@@ -61,27 +61,11 @@ app.post("/newOrder", async (req, res) => {
   }
 });
 
-// ---------- STATIC FRONTEND ----------
-const frontendPath = path.join(__dirname, "../frontend/build");
-app.use("/frontend", express.static(frontendPath));
+// ---------- SERVE FRONTEND BUILD ----------
+app.use(express.static(path.join(__dirname, "build")));
 
-// SPA fallback for frontend
-app.get(/^\/frontend(\/.*)?$/, (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
-});
-
-// ---------- STATIC DASHBOARD ----------
-const dashboardPath = path.join(__dirname, "../dashboard/build");
-app.use("/dashboard", express.static(dashboardPath));
-
-// SPA fallback for dashboard
-app.get(/^\/dashboard(\/.*)?$/, (req, res) => {
-  res.sendFile(path.join(dashboardPath, "index.html"));
-});
-
-// ---------- ROOT REDIRECT ----------
-app.get("/", (req, res) => {
-  res.redirect("https://tradex-3-agri.onrender.com");
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 // ---------- START SERVER ----------
