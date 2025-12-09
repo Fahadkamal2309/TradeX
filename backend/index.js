@@ -61,11 +61,13 @@ app.post("/newOrder", async (req, res) => {
   }
 });
 
-// ---------- SERVE FRONTEND BUILD ----------
-app.use(express.static(path.join(__dirname, "build")));
+// ---------- STATIC FRONTEND SERVE ----------
+const frontendPath = path.join(__dirname, "../frontend/build");
+app.use("/", express.static(frontendPath));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+// SPA fallback (fix for Node 22)
+app.get(/^\/(.*)?$/, (req, res) => {
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
 
 // ---------- START SERVER ----------
