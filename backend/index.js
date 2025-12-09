@@ -23,10 +23,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 // --------------------------------
 
-// Parse JSON
 app.use(express.json());
-
-// Request logging
 app.use((req, res, next) => {
   console.log("Incoming request:", req.method, req.url, req.body);
   next();
@@ -68,8 +65,8 @@ app.post("/newOrder", async (req, res) => {
 const frontendPath = path.join(__dirname, "../frontend/build");
 app.use("/frontend", express.static(frontendPath));
 
-// Frontend SPA fallback
-app.get("/frontend/*", (req, res) => {
+// SPA fallback for frontend
+app.get(/^\/frontend(\/.*)?$/, (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
 });
 
@@ -77,8 +74,8 @@ app.get("/frontend/*", (req, res) => {
 const dashboardPath = path.join(__dirname, "../dashboard/build");
 app.use("/dashboard", express.static(dashboardPath));
 
-// Dashboard SPA fallback
-app.get("/dashboard/*", (req, res) => {
+// SPA fallback for dashboard
+app.get(/^\/dashboard(\/.*)?$/, (req, res) => {
   res.sendFile(path.join(dashboardPath, "index.html"));
 });
 
