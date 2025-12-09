@@ -25,7 +25,7 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use((req, res, next) => {
-  console.log("Incoming request:", req.method, req.url, req.body);
+  console.log("Incoming request:", req.method, req.url);
   next();
 });
 
@@ -63,32 +63,23 @@ app.post("/newOrder", async (req, res) => {
 
 // ---------- STATIC FRONTEND ----------
 const frontendPath = path.join(__dirname, "../frontend/build");
-app.use("/frontend", express.static(frontendPath));
-app.use("/frontend/media", express.static(path.join(frontendPath, "media")));
+app.use(express.static(frontendPath));
 
-// SPA fallback for frontend
-app.use("/frontend", (req, res) => {
+// SPA fallback for frontend routes (except API & dashboard)
+app.get(/^\/(?!api|dashboard).*/, (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
-});
-
-// Redirect clean frontend URLs to SPA
-app.get("/login", (req, res) => {
-  res.redirect("/frontend/login");
-});
-app.get("/signup", (req, res) => {
-  res.redirect("/frontend/signup");
 });
 
 // ---------- STATIC DASHBOARD ----------
 const dashboardPath = path.join(__dirname, "../dashboard/build");
 app.use("/dashboard", express.static(dashboardPath));
-app.use("/dashboard", (req, res) => {
+app.get("/dashboard/*", (req, res) => {
   res.sendFile(path.join(dashboardPath, "index.html"));
 });
 
 // ---------- ROOT REDIRECT ----------
 app.get("/", (req, res) => {
-  res.redirect("/frontend");
+  res.redirect("/"); // Redirect handled by SPA fallback
 });
 
 // ---------- START SERVER ----------
