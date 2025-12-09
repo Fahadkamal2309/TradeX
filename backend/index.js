@@ -81,7 +81,7 @@ app.get(/^\/dashboard(\/.*)?$/, (req, res) => {
 
 // ---------- ROOT REDIRECT ----------
 app.get("/", (req, res) => {
-  res.redirect("/frontend");
+  res.redirect("https://tradex-3-agri.onrender.com");
 });
 
 // ---------- START SERVER ----------
