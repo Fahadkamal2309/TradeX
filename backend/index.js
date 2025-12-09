@@ -15,8 +15,8 @@ const PORT = process.env.PORT || 3002;
 // ----------- CORS ---------------
 const corsOptions = {
   origin: [
-    "https://tradex-3-agri.onrender.com",        // Frontend
-    "https://tradex-dashboard-4u8g.onrender.com" // Dashboard
+    "https://tradex-3-agri.onrender.com",        // frontend deploy
+    "https://tradex-dashboard-4u8g.onrender.com" // dashboard deploy
   ],
   credentials: true,
 };
@@ -66,16 +66,22 @@ const frontendPath = path.join(__dirname, "../frontend/build");
 app.use("/frontend", express.static(frontendPath));
 app.use("/frontend/media", express.static(path.join(frontendPath, "media")));
 
-// SPA fallback: catch-all for frontend
+// SPA fallback for frontend
 app.use("/frontend", (req, res) => {
   res.sendFile(path.join(frontendPath, "index.html"));
+});
+
+// Redirect clean frontend URLs to SPA
+app.get("/login", (req, res) => {
+  res.redirect("/frontend/login");
+});
+app.get("/signup", (req, res) => {
+  res.redirect("/frontend/signup");
 });
 
 // ---------- STATIC DASHBOARD ----------
 const dashboardPath = path.join(__dirname, "../dashboard/build");
 app.use("/dashboard", express.static(dashboardPath));
-
-// SPA fallback: catch-all for dashboard
 app.use("/dashboard", (req, res) => {
   res.sendFile(path.join(dashboardPath, "index.html"));
 });
